@@ -1,0 +1,343 @@
+/* ============================================================================
+   Versal — Stylesheet
+   Grundlage: DESIGNSYSTEM.md (GSAP). Abweichungen begruendet in DESIGN.md 5.
+   Bewegung an gsap.com gemessen, umgesetzt in eigenem Code — DESIGN.md 4.
+   Pruefbar mit:  python3 _werkzeug/kontrast.py
+   ========================================================================== */
+
+:root{
+  /* --- Farben --------------------------------------------------------- */
+  --schwarz:#0e100f;   --offblack:#191919;
+  --creme:#fffce1;     --creme50:#7c7c6f;   --creme25:#42433d;
+  --gruen:#0ae448;     --hellgruen:#abff84;
+  --blau:#00bae2;      --orange:#ff8709;    --lila:#9d95ff;  --pink:#fec5fb;
+
+  /* --- Abstaende, Grundeinheit 4px ------------------------------------ */
+  --s8:8px; --s12:12px; --s16:16px; --s20:20px; --s24:24px; --s32:32px;
+  --s76:76px; --s96:96px; --s108:108px;
+
+  /* --- Mass ----------------------------------------------------------- */
+  --mass:1280px;
+  --abschnitt:clamp(64px, 8vw, 108px);
+  --kartenpolster:24px;
+
+  /* --- Radien --------------------------------------------------------- */
+  --r-knopf:100px;   /* Knoepfe, immer */
+  --r-karte:8px;     /* Karten, kleine Marken */
+
+  /* --- Schrift -------------------------------------------------------- */
+  --satz:"Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* --- Bewegung. An gsap.com gemessen, siehe DESIGN.md 4. ------------- */
+  --k-zustand:cubic-bezier(.645,.045,.355,1);  /* easeInOutCubic, 75 Elemente */
+  --k-einzug: cubic-bezier(.23,1,.32,1);       /* easeOutQuint              */
+  --k-schub:  cubic-bezier(.86,0,.07,1);       /* easeInOutQuint            */
+  --k-weg:    cubic-bezier(.755,.05,.855,.06); /* easeInQuart, nur Menue    */
+
+  --d-zustand:300ms;   --d-marke:50ms;     --d-menue:150ms;
+  --d-schub:300ms;     --d-handy:400ms;    --d-einzug:700ms;
+  --d-aktiv:800ms;     --d-symbol:100ms;
+  --v-zeile:100ms;     --v-aktiv:200ms;    --v-symbol:300ms;
+}
+
+@font-face{ font-family:"Inter Tight";  src:url("fonts/inter-tight.woff2")   format("woff2-variations"); font-weight:100 900; font-display:swap }
+@font-face{ font-family:"Probe Grotesk"; src:url("fonts/space-grotesk.woff2") format("woff2-variations"); font-weight:300 700; font-display:swap }
+@font-face{ font-family:"Probe Antiqua"; src:url("fonts/source-serif.woff2")  format("woff2-variations"); font-weight:200 900; font-display:swap }
+@font-face{ font-family:"Probe Mono";    src:url("fonts/jetbrains.woff2")     format("woff2-variations"); font-weight:100 800; font-display:swap }
+@font-face{ font-family:"Probe Display"; src:url("fonts/archivo-black.woff2") format("woff2");            font-weight:400;     font-display:swap }
+
+*,*::before,*::after{ box-sizing:border-box }
+html{ -webkit-text-size-adjust:100%; overflow-x:clip; scroll-behavior:smooth }
+body{
+  margin:0; background:var(--schwarz); color:var(--creme);
+  font-family:var(--satz); font-weight:400;
+  font-size:19px; line-height:1.15; letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block }
+a{ color:inherit }
+p{ margin:0 }
+h1,h2,h3,h4{ margin:0; font-weight:600 }
+ul,ol{ margin:0; padding:0; list-style:none }
+
+/* ===========================================================================
+   TYPOGRAFIE
+   Die Tabelle des Systems ist knapp: 224px traegt -0,02em, JEDE andere
+   Ueberschrift -0,011em, Fliesstext und Oberflaeche -0,01em.
+
+   Daraus folgt: nur EINE Klasse braucht Baender — die Schauzeile. Sie spannt
+   von 56px bis 224px, und bei 56px waere -0,02em grob zu eng. In den beiden
+   vorigen Projekten habe ich genau diesen Fall uebersehen und erst durch
+   Messung gefunden. Hier steht er vor dem ersten Commit.
+   ========================================================================= */
+.t-caption   { font-size:14px; line-height:1.4;  letter-spacing:-.010em }
+.t-body-sm   { font-size:16px; line-height:1.15; letter-spacing:0 }
+.t-body      { font-size:19px; line-height:1.15; letter-spacing:0 }
+.t-body-lg   { font-size:23px; line-height:1.38; letter-spacing:-.010em }
+.t-subheading{ font-size:clamp(26px,3.2vw,34px);  line-height:1.2; letter-spacing:-.011em; font-weight:600 }
+.t-heading-sm{ font-size:clamp(32px,4.0vw,44px);  line-height:1.2; letter-spacing:-.011em; font-weight:600 }
+.t-heading   { font-size:clamp(40px,5.6vw,66px);  line-height:1.2; letter-spacing:-.011em; font-weight:600 }
+.t-heading-lg{ font-size:clamp(44px,7.9vw,101px); line-height:1.0; letter-spacing:-.011em; font-weight:600 }
+
+/* Die Schauzeile. Baender nach der Tabelle des Systems. */
+.t-display{
+  font-size:clamp(56px,16vw,224px); line-height:.9; font-weight:600;
+  letter-spacing:-.011em;          /* solange sie auf Ueberschriftengroesse rendert */
+}
+@media(min-width:760px){  .t-display{ letter-spacing:-.015em } }
+@media(min-width:1240px){ .t-display{ letter-spacing:-.020em } }
+
+.gedaempft{ color:var(--creme50) }
+/* Creme50 auf Off Black misst 4,16:1 und faellt durch. Auf JEDER Flaeche aus
+   Off Black schreibt deshalb Creme. Siehe DESIGN.md 5.1.
+
+   ACHTUNG, hier lag zuerst ein Fehler: Die Regel hiess `.offblack`. Diese
+   Klasse gibt es nicht — die Flaechen heissen `.karte`, `.schau__bild` und
+   `.fuss`. Der Selektor traf nie zu, und neun Textstellen standen auf
+   4,16:1. Gefunden durch die Kontrastpruefung, nicht durch Hinsehen. */
+.fuss .gedaempft,
+.karte:not(.karte--offen) .gedaempft,
+.schau__bild .gedaempft{ color:var(--creme) }
+
+/* Die geschweifte Klammer — die Signatur des Systems vor jedem Abschnitt. */
+.klammer{ font-size:clamp(15px,1.4vw,19px); font-weight:400; letter-spacing:-.01em;
+  color:var(--creme); display:inline-block; margin-bottom:var(--s24) }
+.klammer::before{ content:"{ " }
+.klammer::after { content:" }" }
+
+/* Die Farbtaxonomie. Jede Familie traegt ihre Farbe — nie eine fremde. */
+.f-grotesk{ color:var(--blau) }
+.f-antiqua{ color:var(--orange) }
+.f-mono   { color:var(--lila) }
+.f-display{ color:var(--pink) }
+.f-haus   { color:var(--gruen) }
+
+/* Die Schriftproben. Stellvertreter, siehe BRIEF.md 4.3. */
+.probe--grotesk{ font-family:"Probe Grotesk", var(--satz) }
+.probe--antiqua{ font-family:"Probe Antiqua", Georgia, serif }
+.probe--mono   { font-family:"Probe Mono", ui-monospace, monospace }
+.probe--display{ font-family:"Probe Display", var(--satz); font-weight:400 }
+
+/* ===========================================================================
+   BEWEGUNG — gemessen an gsap.com
+   ========================================================================= */
+a, .knopf, .navverweis{
+  transition:color var(--d-zustand) var(--k-zustand),
+             border-color var(--d-zustand) var(--k-zustand),
+             opacity var(--d-zustand) var(--k-zustand);
+}
+/* 50 ms auf der Knopfbeschriftung: waehrend der Rand in 300 ms wechselt,
+   springt die Schrift fast sofort um. Gemessen, und es traegt den Charakter. */
+.knopf__text{ transition:color var(--d-marke) var(--k-zustand) }
+
+/* Einblenden beim Scrollen: 700 ms easeOutQuint, Opazitaet und Versatz. */
+.js [data-ein]{
+  opacity:0; transform:translateY(24px);
+  transition:opacity var(--d-einzug) var(--k-einzug),
+             transform var(--d-einzug) var(--k-einzug);
+  transition-delay:var(--verzug,0s);
+}
+.js [data-ein].da{ opacity:1; transform:none }
+/* Zeilenpaare laufen versetzt — die zweite Zeile immer hinter der ersten. */
+.v1{--verzug:100ms} .v2{--verzug:200ms} .v3{--verzug:300ms} .v4{--verzug:400ms}
+
+@media(prefers-reduced-motion:reduce){
+  .js [data-ein]{ opacity:1!important; transform:none!important; transition:none!important }
+  a,.knopf,.knopf__text,.navverweis,.menue,.form{ transition:none!important; animation:none!important }
+}
+
+/* ===========================================================================
+   KNOEPFE — ausnahmslos umrandete Pillen, 100px Radius.
+   Das System verbietet gefuellte Knoepfe. Einzige Steigerung: der Verlaufsrand.
+   ========================================================================= */
+.knopf{
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s8);
+  min-height:48px; padding:15px var(--s24);
+  border:1px solid var(--creme); border-radius:var(--r-knopf);
+  background:transparent; color:var(--creme);
+  font:inherit; font-size:18px; font-weight:600; line-height:1.05;
+  text-decoration:none; cursor:pointer;
+}
+@media(any-hover:hover){ .knopf:hover{ opacity:.8 } }
+
+/* Der Hauptknopf: 1,5px Verlaufsrand von Gruen nach Hellgruen.
+   Ueber zwei Hintergruende gebaut, weil border-image keinen Radius kennt. */
+.knopf--haupt{
+  border-color:transparent;
+  background:
+    linear-gradient(var(--schwarz), var(--schwarz)) padding-box,
+    linear-gradient(114.41deg, var(--gruen) 20.74%, var(--hellgruen) 65.5%) border-box;
+  border-width:1.5px;
+}
+@media(any-hover:hover){ .knopf--haupt:hover{ opacity:.85 } }
+.knopfreihe{ display:flex; flex-wrap:wrap; gap:var(--s16); align-items:center }
+
+/* ===========================================================================
+   NAVIGATION — eine Leiste, enge Abstaende, cremefarben
+   ========================================================================= */
+.kopf{ position:sticky; top:0; z-index:50; background:var(--schwarz) }
+.kopf__reihe{
+  max-width:var(--mass); margin:0 auto; min-height:72px;
+  padding:var(--s16) var(--s24);
+  display:flex; align-items:center; justify-content:space-between; gap:var(--s16);
+}
+.marke{ font-size:24px; font-weight:600; letter-spacing:-.02em;
+  color:var(--creme); text-decoration:none }
+.kopf__liste{ display:none; align-items:center; gap:var(--s16) }
+.navverweis{ font-size:16px; font-weight:400; color:var(--creme50);
+  text-decoration:none; padding:10px 6px }
+@media(any-hover:hover){ .navverweis:hover{ color:var(--creme) } }
+.navverweis[aria-current]{ color:var(--creme) }
+@media(min-width:1000px){ .kopf__liste{ display:flex } .brenner{ display:none } }
+
+/* Die rechte Gruppe der Kopfzeile. Auf schmalen Geraeten faellt der Knopf
+   weg: Wortmarke, Knopf und Brenner brauchen zusammen mehr als 320px —
+   gemessen 326px, also 6px Querlauf. Der Brenner ist dort die Navigation,
+   und das Menue enthaelt den Knopf ohnehin. */
+.kopf__rechts{ display:flex; align-items:center; gap:var(--s16) }
+@media(max-width:559px){ .kopf__rechts .knopf{ display:none } }
+.menue__knopf{ margin-top:var(--s32) }
+
+.brenner{ width:40px; height:40px; border:0; background:none; padding:0;
+  color:var(--creme); cursor:pointer; border-radius:50% }
+.brenner__strich{ display:block; width:22px; height:1.5px; margin:5px auto;
+  background:currentColor;
+  transition:transform var(--d-menue) var(--k-weg), opacity var(--d-menue) var(--k-weg) }
+.brenner[aria-expanded="true"] .brenner__strich:nth-child(1){ transform:translateY(6.5px) rotate(45deg) }
+.brenner[aria-expanded="true"] .brenner__strich:nth-child(2){ opacity:0 }
+.brenner[aria-expanded="true"] .brenner__strich:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg) }
+
+/* Handymenue. visibility mit Verzug, damit es sichtbar bleibt, solange es
+   ausblendet — gemessen an der Vorlage. */
+.menue{
+  position:fixed; inset:72px 0 0; z-index:49; background:var(--schwarz);
+  padding:var(--s32) var(--s24); overflow:auto;
+  transform:translateY(-12px); opacity:0; visibility:hidden;
+  transition:transform var(--d-menue) var(--k-weg),
+             opacity var(--d-menue) var(--k-weg),
+             visibility 0s var(--d-menue);
+}
+.menue[data-auf="ja"]{ transform:none; opacity:1; visibility:visible;
+  transition:transform var(--d-menue) var(--k-weg),
+             opacity var(--d-menue) var(--k-weg), visibility 0s }
+.menue a{ display:block; padding:var(--s16) 0; font-size:23px; font-weight:600;
+  color:var(--creme); text-decoration:none; border-bottom:1px solid var(--creme25) }
+@media(min-width:1000px){ .menue{ display:none } }
+
+/* ===========================================================================
+   LAYOUT — eine durchgehende dunkle Buehne, Haarlinien statt Flaechenwechsel
+   ========================================================================= */
+.huelle{ width:100%; max-width:var(--mass); margin:0 auto; padding:0 var(--s24) }
+.abschnitt{ padding:var(--abschnitt) 0 }
+.linie{ height:1px; background:var(--creme25); border:0; margin:0 }
+.stapeln{ display:flex; flex-direction:column; gap:var(--s20) }
+.stapeln--weit{ gap:var(--s32) }
+.gitter{ display:grid; gap:var(--s24) }
+@media(min-width:760px){ .gitter--2{ grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media(min-width:1000px){
+  .gitter--3{ grid-template-columns:repeat(3,minmax(0,1fr)) }
+  .gitter--seite{ grid-template-columns:minmax(0,5fr) minmax(0,6fr); align-items:center; gap:var(--s76) }
+}
+.schmal{ max-width:54ch }   /* gemessen gesetzt, nicht geraten — s. Pruefung */
+
+/* Der Aufmacher bleibt randlos: keine Hoechstbreite, die Zeile darf auslaufen. */
+.aufmacher{ padding:var(--s76) 0 var(--abschnitt) }
+.aufmacher__zeile{ display:block }
+
+/* ===========================================================================
+   FAMILIENBLOCK — das Gegenstueck zum Tool Feature Block
+   Links eine weiche Form in der Farbe der Familie, rechts die Angaben.
+   Getrennt durch eine Haarlinie ueber die volle Breite.
+   ========================================================================= */
+.familie{ padding:var(--abschnitt) 0 }
+.familie__klasse{ font-size:clamp(19px,2vw,24px); font-weight:400; margin-bottom:var(--s12) }
+.familie__name{ margin-bottom:var(--s16) }
+.familie__text{ margin-bottom:var(--s32); max-width:46ch }
+
+/* Die weichen Formen. Tiefe entsteht nur ueber Verlaeufe — nie ueber Schatten. */
+.form{
+  width:100%; max-width:420px; aspect-ratio:1/1; margin-inline:auto;
+  border-radius:50% 50% 46% 54% / 48% 44% 56% 52%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255,252,225,.38), rgba(255,252,225,0) 46%),
+    linear-gradient(142deg, var(--f1) 8%, var(--f2) 92%);
+  animation:atmen 14s ease-in-out infinite;
+}
+@keyframes atmen{
+  50%{ border-radius:54% 46% 52% 48% / 44% 52% 48% 56%; transform:translateY(-10px) }
+}
+.form--grotesk{ --f1:var(--blau);   --f2:#0a7fa0 }
+.form--antiqua{ --f1:var(--orange); --f2:#b84f00 }
+.form--mono   { --f1:var(--lila);   --f2:#5a52c9 }
+.form--display{ --f1:var(--pink);   --f2:#c46bbf }
+.form--haus   { --f1:var(--gruen);  --f2:var(--hellgruen) }
+
+/* ===========================================================================
+   KARTEN UND SCHAUFENSTER
+   ========================================================================= */
+.karte{ border-radius:var(--r-karte); padding:var(--kartenpolster);
+  background:var(--offblack); display:flex; flex-direction:column; gap:var(--s12) }
+.karte--offen{ background:transparent; border:1px solid var(--creme25) }
+.schau__bild{
+  border-radius:var(--r-karte); aspect-ratio:16/9; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  padding:var(--s24); background:var(--offblack);
+}
+/* Schauwoerter sind Schriftproben in Schaugroesse — im System traegt das
+   Schnitt 600. Ohne diese Zeile erben sie die 400 des Fliesstextes.
+   Ausnahme ist die Auszeichnungsprobe: ihre Schriftdatei hat nur einen
+   Schnitt, der bereits fett ist. Dort wuerde 600 nur kuenstlich fetten. */
+.schau__wort{ font-size:clamp(34px,4.6vw,66px); line-height:1;
+  letter-spacing:-.011em; font-weight:600; overflow-wrap:anywhere }
+
+/* Die Probezeile auf den Familienseiten. Sie darf umbrechen statt zu
+   schrumpfen: Ein Probewort, das auf 28px geschrumpft wird, zeigt die
+   Formen nicht mehr, um die es geht. Gemessen brauchte "Hamburgefonstiv"
+   bei 40px rund 330px, verfuegbar sind bei 320px Fenster aber 272px. */
+.probe__zeile{
+  font-size:clamp(40px,9vw,120px); line-height:1; letter-spacing:-.02em;
+  overflow-wrap:anywhere;
+}
+.schau__wort.probe--display{ font-weight:400 }
+
+/* ===========================================================================
+   FORMULAR
+   ========================================================================= */
+.feld{ display:flex; flex-direction:column; gap:var(--s8) }
+.feld label{ font-size:16px; color:var(--creme50) }
+.feld input,.feld select,.feld textarea{
+  font:inherit; font-size:16px; color:var(--creme); background:transparent;
+  border:1px solid var(--creme25); border-radius:var(--r-karte);
+  padding:14px var(--s16); min-height:48px; width:100%;
+  transition:border-color var(--d-zustand) var(--k-zustand);
+}
+.feld input:focus,.feld select:focus,.feld textarea:focus{
+  border-color:var(--creme); outline:none;
+}
+.feld textarea{ min-height:9rem; resize:vertical }
+
+/* ===========================================================================
+   FOKUS UND FUSSZEILE
+   ========================================================================= */
+:focus-visible{ outline:2px solid var(--gruen); outline-offset:3px; border-radius:2px }
+.nur-vorleser{ position:absolute!important; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap }
+.sprungmarke{
+  position:absolute; left:var(--s8); top:var(--s8); z-index:100;
+  background:var(--creme); color:var(--schwarz);
+  padding:var(--s12) var(--s16); border-radius:var(--r-knopf); text-decoration:none;
+  transform:translateY(-200%); transition:transform var(--d-zustand) var(--k-zustand);
+}
+.sprungmarke:focus{ transform:translateY(0) }
+
+.fuss{ background:var(--offblack); border-top:1px solid var(--creme25);
+  padding:var(--s76) 0 var(--s32) }
+.fuss__spalten{ display:grid; gap:var(--s32) }
+@media(min-width:760px){ .fuss__spalten{ grid-template-columns:repeat(4,minmax(0,1fr)) } }
+.fuss__titel{ font-size:16px; color:var(--creme); margin-bottom:var(--s12); font-weight:600 }
+.fuss__liste{ display:flex; flex-direction:column; gap:var(--s8) }
+.fuss__liste a{ font-size:16px; color:var(--creme); text-decoration:none; opacity:.75 }
+@media(any-hover:hover){ .fuss__liste a:hover{ opacity:1 } }
+.fuss__unten{ margin-top:var(--s76); padding-top:var(--s24);
+  border-top:1px solid var(--creme25); display:flex; flex-wrap:wrap;
+  gap:var(--s16); justify-content:space-between; font-size:14px; color:var(--creme) }
