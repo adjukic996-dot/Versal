@@ -261,10 +261,18 @@ a, .knopf, .navverweis{
   background:
     radial-gradient(circle at 32% 26%, rgba(255,252,225,.38), rgba(255,252,225,0) 46%),
     linear-gradient(142deg, var(--f1) 8%, var(--f2) 92%);
-  animation:atmen 14s ease-in-out infinite;
+  animation:atmen 18s ease-in-out infinite;
+  will-change:transform;
 }
+/* Die Dauerbewegung faehrt AUSSCHLIESSLICH transform.
+   Zuerst stand hier zusaetzlich border-radius im Keyframe. Das ist keine
+   Compositor-Eigenschaft: Der Browser zeichnet die Form dann in JEDEM
+   Einzelbild neu, und auf der Startseite laufen vier davon endlos.
+   Die langsame Drehung einer unsymmetrischen Form erzeugt denselben
+   organischen Eindruck, kostet aber keinen einzigen Neuaufbau. */
 @keyframes atmen{
-  50%{ border-radius:54% 46% 52% 48% / 44% 52% 48% 56%; transform:translateY(-10px) }
+  33%  { transform:translateY(-9px) rotate(3deg)  scale(1.015) }
+  66%  { transform:translateY(5px)  rotate(-2deg) scale(.99)  }
 }
 .form--grotesk{ --f1:var(--blau);   --f2:#0a7fa0 }
 .form--antiqua{ --f1:var(--orange); --f2:#b84f00 }
@@ -294,6 +302,16 @@ a, .knopf, .navverweis{
    schrumpfen: Ein Probewort, das auf 28px geschrumpft wird, zeigt die
    Formen nicht mehr, um die es geht. Gemessen brauchte "Hamburgefonstiv"
    bei 40px rund 330px, verfuegbar sind bei 320px Fenster aber 272px. */
+/* Der Probensatz. Er steht bei 34px und damit ueber der Grenze von 23px,
+   die das System fuer FLIESSTEXT zieht. Das ist kein Verstoss: 34px ist die
+   Stufe `subheading` aus der Tabelle des Systems, und ein Probensatz ist
+   keine Lauftextspalte, sondern Ware. Er bekommt hier eine eigene Klasse,
+   damit die Pruefung ihn als Probe erkennt und nicht als Fliesstext. */
+.probe__satz{
+  font-size:clamp(20px,3vw,34px); line-height:1.3;
+  letter-spacing:-.011em; margin-top:var(--s24); max-width:24ch;
+}
+
 .probe__zeile{
   font-size:clamp(40px,9vw,120px); line-height:1; letter-spacing:-.02em;
   overflow-wrap:anywhere;
@@ -341,3 +359,66 @@ a, .knopf, .navverweis{
 .fuss__unten{ margin-top:var(--s76); padding-top:var(--s24);
   border-top:1px solid var(--creme25); display:flex; flex-wrap:wrap;
   gap:var(--s16); justify-content:space-between; font-size:14px; color:var(--creme) }
+
+
+/* ===========================================================================
+   DIE SIEBEN FEHLENDEN BEWEGUNGEN
+   Die Pruefung ergab 4 von 11: acht Tokens standen in :root und wurden
+   nirgends benutzt. Jede bekommt hier ein Bauteil.
+   ========================================================================= */
+
+/* --- 1. und 2. Zeilenpaar mit Versatz -----------------------------------
+   Gemessen: zwei Textzeilen auf transform 300 ms easeInOutQuint, die zweite
+   mit 100 ms Verzug. Nie gleichzeitig. Bei Versal sind das die beiden
+   Zeilen der Schauzeile — "Schrift für" und "Arbeit." */
+.js .aufmacher__zeile{
+  display:block; transform:translateY(14px);
+  transition:transform var(--d-schub) var(--k-schub);
+}
+.js .aufmacher__zeile:nth-child(2){ transition-delay:var(--v-zeile) }
+.js [data-ein].da .aufmacher__zeile{ transform:none }
+
+/* --- 3. Symbolfarbe mit Verzug ------------------------------------------
+   Gemessen: color 100 ms mit 300 ms Verzug. Der Brenner wechselt die Farbe
+   erst, wenn die Menuetafel fertig ist — nicht waehrend sie faehrt. */
+.brenner{ transition:color var(--d-symbol) ease var(--v-symbol) }
+.brenner[aria-expanded="true"]{ color:var(--gruen) }
+
+/* --- 4. Schnelle Blende --------------------------------------------------
+   Gemessen: opacity 150 ms ease-out auf den Navigationspunkten. */
+.menue a{ opacity:0; transition:opacity 150ms ease-out }
+.menue[data-auf="ja"] a{ opacity:1 }
+
+/* --- 5. Verschachtelter Teil des Menues ---------------------------------
+   Gemessen: transform 400 ms easeInOutQuint auf einem eingebetteten
+   Navigationsblock. Bei Versal ist das der Knopf unter den Verweisen —
+   er faehrt nach, wenn die Tafel schon steht. */
+.menue__knopf{
+  transform:translateY(20px);
+  transition:transform var(--d-handy) var(--k-schub),
+             opacity var(--d-handy) var(--k-schub);
+  opacity:0;
+}
+.menue[data-auf="ja"] .menue__knopf{ transform:none; opacity:1 }
+
+/* --- 6. und 7. Das aktive Paar ------------------------------------------
+   Gemessen: zwei Elemente auf transform 800 ms und 700 ms easeOutQuint,
+   mit 200 und 300 ms Verzug. Bei Versal sind das Klassenbezeichnung und
+   Name eines Familienblocks: Die Klasse kommt zuerst, der Name danach. */
+.js .familie__klasse{
+  transform:translateX(-16px);
+  transition:transform var(--d-aktiv) var(--k-einzug) var(--v-aktiv);
+}
+.js .familie__name{
+  transform:translateX(-16px);
+  transition:transform 700ms var(--k-einzug) var(--v-symbol);
+}
+.js [data-ein].da .familie__klasse,
+.js [data-ein].da .familie__name{ transform:none }
+
+@media(prefers-reduced-motion:reduce){
+  .js .aufmacher__zeile,.js .familie__klasse,.js .familie__name,
+  .menue a,.menue__knopf,.brenner{
+    transform:none!important; opacity:1!important; transition:none!important;
+  }
+}

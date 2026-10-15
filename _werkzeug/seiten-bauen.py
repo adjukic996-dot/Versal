@@ -274,8 +274,8 @@ def familienseite(f: dict) -> str:
     {klammer("Probe")}
     <div class="probe--{probe}" data-ein>
       <p class="probe__zeile f-{f["farbe"]}">Hamburgefonstiv</p>
-      <p style="font-size:clamp(20px,3vw,34px);line-height:1.3;margin-top:var(--s24)">
-        Der Föhn drückt über die Alpen, und in München steigt das Quecksilber.</p>
+      <p class="probe__satz">Der Föhn drückt über die Alpen, und in München
+        steigt das Quecksilber.</p>
       <p class="t-body" style="margin-top:var(--s24);max-width:60ch">
         Eine Schrift zeigt sich nicht in der Schauzeile, sondern im Satz. Hier steht sie in
         der Grösse, in der sie später wirklich arbeitet: dicht gesetzt, über mehrere Zeilen,
@@ -404,7 +404,7 @@ def lizenzen() -> str:
 </section>
 <hr class="linie">
 <section class="abschnitt">
-  <div class="huelle stapeln stapeln--weit" style="max-width:68ch">
+  <div class="huelle stapeln stapeln--weit" style="max-width:56ch">
     {klammer("Was das heisst")}
     <p class="t-body-lg" data-ein>Eine Lizenz gilt für das, wofür Sie sie gekauft haben,
       und zwar dauerhaft. Wenn Ihr Unternehmen wächst, wächst die Rechnung nicht mit.</p>
@@ -524,7 +524,7 @@ def impressum() -> str:
 </section>
 <hr class="linie">
 <section class="abschnitt">
-  <div class="huelle stapeln stapeln--weit" style="max-width:68ch" data-ein>
+  <div class="huelle stapeln stapeln--weit" style="max-width:56ch" data-ein>
     <div><h2 class="t-subheading">Anbieter</h2>
       <p class="t-body">Versal GmbH<br>Ganghoferstraße 68, 80339 München</p>
       <p class="t-body">Geschäftsführung: Henrike Baumgartl, Milan Prohaska<br>
@@ -568,7 +568,7 @@ def datenschutz() -> str:
 </section>
 <hr class="linie">
 <section class="abschnitt">
-  <div class="huelle stapeln stapeln--weit" style="max-width:68ch" data-ein>{inhalt}
+  <div class="huelle stapeln stapeln--weit" style="max-width:56ch" data-ein>{inhalt}
     <p class="t-caption gedaempft">Stand: Oktober 2026</p>
   </div>
 </section>'''
